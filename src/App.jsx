@@ -187,6 +187,43 @@ function App() {
         throw new Error("NeonDB connection string is missing or not configured.");
       }
 
+      // Check if image serial range matches
+      const isNumeric = /^\d+$/.test(query);
+      let imgMatch = [];
+      try {
+        imgMatch = await sql`
+          SELECT * FROM images 
+          WHERE (
+            UPPER(from_id) = ${query} 
+            OR UPPER(to_id) = ${query} 
+            OR UPPER(file_path) = ${query}
+          ) OR (
+            ${isNumeric} = TRUE 
+            AND from_id ~ '^[0-9]+$' 
+            AND to_id ~ '^[0-9]+$' 
+            AND CAST(${query} AS NUMERIC) >= CAST(from_id AS NUMERIC) 
+            AND CAST(${query} AS NUMERIC) <= CAST(to_id AS NUMERIC)
+          )
+          LIMIT 1
+        `;
+      } catch (imgErr) {
+        console.warn("Images table search failed:", imgErr);
+      }
+
+      if (imgMatch && imgMatch.length > 0) {
+        const cert = imgMatch[0];
+        await animationDelay;
+        setSearchResult({
+          type: 'image',
+          from: cert.from_id,
+          to: cert.to_id,
+          cdn_url: cert.cdn_url,
+          file_path: cert.file_path,
+          serial_number: query
+        });
+        return;
+      }
+
       // 1. Check/Create Table
       await sql`
         CREATE TABLE IF NOT EXISTS certificates (
@@ -223,7 +260,11 @@ function App() {
 
       if (results.length > 0) {
         const cert = results[0];
-        setSearchResult(`Item: ${cert.item}. Grade: ${cert.grade}. Blessing: ${cert.blessing}. Astrological Match: ${cert.astrological_match}.`);
+        setSearchResult({
+          type: 'text',
+          text: `Item: ${cert.item}. Grade: ${cert.grade}. Blessing: ${cert.blessing}. Astrological Match: ${cert.astrological_match}.`,
+          serial_number: query
+        });
       } else {
         setSearchResult(null);
       }
@@ -240,7 +281,11 @@ function App() {
       };
 
       if (mockDatabase[query]) {
-        setSearchResult(mockDatabase[query]);
+        setSearchResult({
+          type: 'text',
+          text: mockDatabase[query],
+          serial_number: query
+        });
       } else {
         setSearchResult(null);
       }
@@ -532,23 +577,48 @@ function App() {
               <div
                 style={{
                   marginTop: '15px',
-                  padding: '12px 18px',
+                  padding: '16px 18px',
                   borderRadius: '12px',
-                  background: 'rgba(10, 11, 13, 0.7)',
+                  background: 'rgba(10, 11, 13, 0.75)',
                   border: '1px solid rgba(212, 175, 55, 0.3)',
                   backdropFilter: 'blur(10px)',
                   WebkitBackdropFilter: 'blur(10px)',
-                  boxShadow: '0 10px 25px rgba(0,0,0,0.5)',
-                  textAlign: 'left'
+                  boxShadow: '0 10px 25px rgba(0, 0, 0, 0.5)',
+                  textAlign: 'left',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px'
                 }}
               >
-                <h4 style={{ color: 'var(--gold-primary)', fontSize: '0.85rem', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase' }}>
+                <h4 style={{ color: 'var(--gold-primary)', fontSize: '0.85rem', margin: 0, display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase' }}>
                   <span style={{ display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%', background: '#4CAF50' }}></span>
                   Authentic Item Verified
                 </h4>
-                <p style={{ color: '#fff', fontSize: '0.8rem', lineHeight: '1.4' }}>
-                  {searchResult}
-                </p>
+                {searchResult.type === 'image' ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <div style={{ width: '100%', maxHeight: '220px', borderRadius: '8px', overflow: 'hidden', background: '#000', display: 'flex', justifyContent: 'center', alignItems: 'center', border: '1px solid rgba(255,255,255,0.1)' }}>
+                      <img 
+                        src={searchResult.cdn_url} 
+                        alt="Sacred Item" 
+                        style={{ maxWidth: '100%', maxHeight: '220px', objectFit: 'contain' }} 
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><rect width='100%' height='100%' fill='%23f1f5f9'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%2394a3b8' font-family='sans-serif' font-size='10'>Broken URL</text></svg>";
+                        }}
+                      />
+                    </div>
+                    <div style={{ fontSize: '0.8rem', color: '#fff', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      {searchResult.file_path && <div style={{ fontWeight: '600', color: 'var(--gold-primary)' }}>{searchResult.file_path}</div>}
+                      <div style={{ color: '#a0aec0' }}>
+                        Number: {searchResult.serial_number}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <p style={{ color: '#fff', fontSize: '0.8rem', lineHeight: '1.4', margin: 0 }}>
+                    {searchResult.text}
+                  </p>
+                )}
               </div>
             )}
 
