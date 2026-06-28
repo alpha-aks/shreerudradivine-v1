@@ -92,7 +92,8 @@ const PRODUCTS = [
   }
 ];
 
-const sql = neon(import.meta.env.VITE_NEONDB_CONNECTION_STRING);
+const dbUrl = import.meta.env.VITE_NEONDB_CONNECTION_STRING;
+const sql = dbUrl ? neon(dbUrl) : null;
 
 function App() {
   const [activeCategory, setActiveCategory] = useState("All");
@@ -182,6 +183,10 @@ function App() {
     const animationDelay = new Promise(resolve => setTimeout(resolve, 1200));
 
     try {
+      if (!sql) {
+        throw new Error("NeonDB connection string is missing or not configured.");
+      }
+
       // 1. Check/Create Table
       await sql`
         CREATE TABLE IF NOT EXISTS certificates (
@@ -200,7 +205,14 @@ function App() {
           INSERT INTO certificates (serial_number, item, grade, blessing, astrological_match) VALUES
           ('SR-1008', '5 Mukhi Nepali Rudraksha Mala', 'Collector Grade', 'Prana Pratishta Energized', 'Jupiter'),
           ('SR-7777', 'Natural Blue Sapphire (Neelam)', 'Premium Vedic', 'Unheated/Untreated', 'Saturn'),
-          ('SR-5555', '14 Mukhi Gauri Shankar Rudraksha', 'Rare Divine Grade', 'Special Shiva Puja Blessings', 'Mars');
+          ('SR-5555', '14 Mukhi Gauri Shankar Rudraksha', 'Rare Divine Grade', 'Special Shiva Puja Blessings', 'Mars'),
+          ('10113250002', 'Divine Ek Mukhi Rudraksha (Kaju Dana)', 'Vedic Premium Grade', 'Prana Pratishta Energized by Vedic Pundits', 'Sun (Surya)');
+        `;
+      } else {
+        await sql`
+          INSERT INTO certificates (serial_number, item, grade, blessing, astrological_match)
+          VALUES ('10113250002', 'Divine Ek Mukhi Rudraksha (Kaju Dana)', 'Vedic Premium Grade', 'Prana Pratishta Energized by Vedic Pundits', 'Sun (Surya)')
+          ON CONFLICT (serial_number) DO NOTHING;
         `;
       }
 
@@ -223,7 +235,8 @@ function App() {
       const mockDatabase = {
         'SR-1008': 'Item: 5 Mukhi Nepali Rudraksha Mala. Grade: Collector. Blessing: Prana Pratishta Energized. Astrological Match: Jupiter.',
         'SR-7777': 'Item: Natural Blue Sapphire (Neelam). Weight: 4.25 Carats. Grade: Premium Vedic. Treatment: Unheated/Untreated.',
-        'SR-5555': 'Item: 14 Mukhi Gauri Shankar Rudraksha. Grade: Rare Divine. Blessing: Special Shiva Puja Blessings.'
+        'SR-5555': 'Item: 14 Mukhi Gauri Shankar Rudraksha. Grade: Rare Divine. Blessing: Special Shiva Puja Blessings.',
+        '10113250002': 'Item: Divine Ek Mukhi Rudraksha (Kaju Dana). Grade: Vedic Premium Grade. Blessing: Prana Pratishta Energized by Vedic Pundits. Astrological Match: Sun (Surya).'
       };
 
       if (mockDatabase[query]) {
