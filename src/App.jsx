@@ -651,18 +651,7 @@ function App() {
       {/* About / Origin Section */}
       <section 
         id="about" 
-        style={{ 
-          backgroundImage: 'url("/hero Background.png")',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          position: 'relative',
-          height: '100dvh',
-          minHeight: '600px',
-          display: 'flex',
-          alignItems: 'center',
-          padding: '0 5%',
-          borderBottom: '1px solid var(--border-color)'
-        }}
+        className="about-section"
       >
         {/* Transparent Dark overlay (bit light on the right) */}
         <div style={{
