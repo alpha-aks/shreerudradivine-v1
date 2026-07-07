@@ -830,42 +830,42 @@ function App() {
           <h2 className="section-title">Seek Divine Wisdom</h2>
         </div>
 
-        <div className="contact-container">
+        <div className="contact-container" style={{ background: 'rgba(18, 20, 28, 0.95)', border: '1px solid rgba(212, 175, 55, 0.25)', borderRadius: '12px', padding: '50px' }}>
           <div className="contact-info">
             <h3 style={{ fontSize: '1.8rem', color: 'var(--gold-primary)' }}>Get In Touch</h3>
-            <p style={{ color: 'var(--text-secondary)' }}>
+            <p style={{ color: '#c5a880', opacity: 0.9 }}>
               Have questions about choosing the right Rudraksha or gemstone? Fill out the form or reach us through our channels.
             </p>
 
             <div className="info-item">
               <MapPin className="info-icon" />
               <div className="info-details">
-                <h4>Sacred Sanctuary</h4>
-                <p>108 Dev Bhumi Boulevard, Himalayan Foothills, India</p>
+                <h4 style={{ color: 'var(--gold-primary)', fontSize: '1.1rem', marginBottom: '5px' }}>Sacred Sanctuary</h4>
+                <p style={{ color: '#c5a880', fontSize: '0.95rem' }}>108 Dev Bhumi Boulevard, Himalayan Foothills, India</p>
               </div>
             </div>
 
             <div className="info-item">
               <Phone className="info-icon" />
               <div className="info-details">
-                <h4>Call / WhatsApp</h4>
-                <p>+91 98765 43210</p>
+                <h4 style={{ color: 'var(--gold-primary)', fontSize: '1.1rem', marginBottom: '5px' }}>Call / WhatsApp</h4>
+                <p style={{ color: '#c5a880', fontSize: '0.95rem' }}>+91 98765 43210</p>
               </div>
             </div>
 
             <div className="info-item">
               <Mail className="info-icon" />
               <div className="info-details">
-                <h4>Email Address</h4>
-                <p>support@shreerudradivine.com</p>
+                <h4 style={{ color: 'var(--gold-primary)', fontSize: '1.1rem', marginBottom: '5px' }}>Email Address</h4>
+                <p style={{ color: '#c5a880', fontSize: '0.95rem' }}>support@shreerudradivine.com</p>
               </div>
             </div>
 
             <div className="info-item">
               <Clock className="info-icon" />
               <div className="info-details">
-                <h4>Auspicious Hours</h4>
-                <p>Mon - Sat: 9:00 AM - 6:00 PM (IST)</p>
+                <h4 style={{ color: 'var(--gold-primary)', fontSize: '1.1rem', marginBottom: '5px' }}>Auspicious Hours</h4>
+                <p style={{ color: '#c5a880', fontSize: '0.95rem' }}>Mon - Sat: 9:00 AM - 6:00 PM (IST)</p>
               </div>
             </div>
           </div>
@@ -874,15 +874,15 @@ function App() {
             {formSubmitted ? (
               <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', gap: '15px', padding: '20px' }}>
                 <CheckCircle size={60} style={{ color: 'var(--gold-primary)' }} />
-                <h3 style={{ fontSize: '1.6rem', color: '#fff' }}>Blessings Received</h3>
-                <p style={{ color: 'var(--text-secondary)' }}>
+                <h3 style={{ fontSize: '1.6rem', color: 'var(--gold-primary)' }}>Blessings Received</h3>
+                <p style={{ color: '#c5a880' }}>
                   Thank you for reaching out. Our divine counselor will connect with you under the next auspicious planetary hour.
                 </p>
               </div>
             ) : (
               <form className="contact-form" onSubmit={handleFormSubmit}>
                 <div className="form-group">
-                  <label htmlFor="name">Your Name</label>
+                  <label htmlFor="name" style={{ color: '#c5a880', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Your Name</label>
                   <input
                     type="text"
                     id="name"
@@ -890,11 +890,21 @@ function App() {
                     value={formData.name}
                     onChange={handleInputChange}
                     placeholder="Enter your name"
+                    style={{
+                      background: 'rgba(10, 11, 13, 0.9)',
+                      border: '1px solid rgba(212, 175, 55, 0.3)',
+                      borderRadius: '6px',
+                      padding: '14px 18px',
+                      color: '#ffffff',
+                      fontFamily: 'var(--font-body)',
+                      fontSize: '0.95rem',
+                      width: '100%'
+                    }}
                     required
                   />
                 </div>
                 <div className="form-group">
-                  <label htmlFor="email">Email Address</label>
+                  <label htmlFor="email" style={{ color: '#c5a880', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Email Address</label>
                   <input
                     type="email"
                     id="email"
@@ -902,11 +912,21 @@ function App() {
                     value={formData.email}
                     onChange={handleInputChange}
                     placeholder="Enter your email"
+                    style={{
+                      background: 'rgba(10, 11, 13, 0.9)',
+                      border: '1px solid rgba(212, 175, 55, 0.3)',
+                      borderRadius: '6px',
+                      padding: '14px 18px',
+                      color: '#ffffff',
+                      fontFamily: 'var(--font-body)',
+                      fontSize: '0.95rem',
+                      width: '100%'
+                    }}
                     required
                   />
                 </div>
                 <div className="form-group">
-                  <label htmlFor="message">Spiritual Inquiry / Kundali Details</label>
+                  <label htmlFor="message" style={{ color: '#c5a880', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Spiritual Inquiry / Kundali Details</label>
                   <textarea
                     id="message"
                     name="message"
@@ -914,6 +934,17 @@ function App() {
                     value={formData.message}
                     onChange={handleInputChange}
                     placeholder="How may we guide your spiritual journey?"
+                    style={{
+                      background: 'rgba(10, 11, 13, 0.9)',
+                      border: '1px solid rgba(212, 175, 55, 0.3)',
+                      borderRadius: '6px',
+                      padding: '14px 18px',
+                      color: '#ffffff',
+                      fontFamily: 'var(--font-body)',
+                      fontSize: '0.95rem',
+                      width: '100%',
+                      resize: 'vertical'
+                    }}
                     required
                   />
                 </div>
