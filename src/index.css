@@ -584,7 +584,14 @@ section {
 @media (max-width: 900px) {
   .contact-container {
     grid-template-columns: 1fr;
-    padding: 30px;
+    padding: 24px;
+    gap: 30px;
+  }
+
+  .contact-form input,
+  .contact-form textarea {
+    padding: 12px 14px !important;
+    font-size: 0.9rem !important;
   }
 }
 

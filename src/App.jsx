@@ -833,8 +833,7 @@ function App() {
           <span className="section-subtitle">Connect With Us</span>
           <h2 className="section-title">Seek Divine Wisdom</h2>
         </div>
-
-        <div className="contact-container" style={{ background: 'rgba(18, 20, 28, 0.95)', border: '1px solid rgba(212, 175, 55, 0.25)', borderRadius: '12px', padding: '50px' }}>
+        <div className="contact-container" style={{ background: 'rgba(18, 20, 28, 0.95)', border: '1px solid rgba(212, 175, 55, 0.25)' }}>
           <div className="contact-info">
             <h3 style={{ fontSize: '1.8rem', color: 'var(--gold-primary)' }}>Get In Touch</h3>
             <p style={{ color: '#c5a880', opacity: 0.9 }}>
