@@ -995,7 +995,7 @@ function App() {
             </button>
             <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '20px', height: '100%', justifyContent: 'center' }}>
               <h3 style={{ color: 'var(--gold-primary)', fontSize: '1.4rem', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '5px' }}>
-                Vedic Registry Verified
+                Certificate Verified
               </h3>
               
               {searchResult.type === 'image' ? (
@@ -1024,7 +1024,6 @@ function App() {
                     />
                   </div>
                   <div style={{ fontSize: '0.95rem', color: '#c5a880', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    {searchResult.file_path && <div style={{ fontWeight: '700', color: 'var(--gold-primary)' }}>{searchResult.file_path}</div>}
                     <div>
                       Serial Number: <span style={{ color: '#fff', fontWeight: '600' }}>{searchResult.serial_number}</span>
                     </div>
