@@ -108,6 +108,7 @@ function App() {
   const [searchResult, setSearchResult] = useState(null);
   const [searchAttempted, setSearchAttempted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showResultModal, setShowResultModal] = useState(false);
 
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -221,6 +222,7 @@ function App() {
           file_path: cert.file_path,
           serial_number: query
         });
+        setShowResultModal(true);
         return;
       }
 
@@ -265,6 +267,7 @@ function App() {
           text: `Item: ${cert.item}. Grade: ${cert.grade}. Blessing: ${cert.blessing}. Astrological Match: ${cert.astrological_match}.`,
           serial_number: query
         });
+        setShowResultModal(true);
       } else {
         setSearchResult(null);
       }
@@ -286,6 +289,7 @@ function App() {
           text: mockDatabase[query],
           serial_number: query
         });
+        setShowResultModal(true);
       } else {
         setSearchResult(null);
       }
@@ -981,8 +985,68 @@ function App() {
           &copy; {new Date().getFullYear()} Shree Rudradivine. All Rights Reserved. Crafted for cosmic alignment.
         </p>
       </footer>
+
+      {/* Certificate Verification Modal Overlay */}
+      {showResultModal && searchResult && (
+        <div className="cert-modal-overlay" onClick={() => setShowResultModal(false)}>
+          <div className="cert-modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="cert-modal-close" onClick={() => setShowResultModal(false)} aria-label="Close Modal">
+              <X size={20} />
+            </button>
+            <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '20px', height: '100%', justifyContent: 'center' }}>
+              <h3 style={{ color: 'var(--gold-primary)', fontSize: '1.4rem', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '5px' }}>
+                Vedic Registry Verified
+              </h3>
+              
+              {searchResult.type === 'image' ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', height: '80%', justifyContent: 'center' }}>
+                  <div style={{ 
+                    width: '100%', 
+                    flex: 1, 
+                    minHeight: '250px',
+                    maxHeight: '60vh', 
+                    borderRadius: '8px', 
+                    overflow: 'hidden', 
+                    background: '#000', 
+                    display: 'flex', 
+                    justifyContent: 'center', 
+                    alignItems: 'center', 
+                    border: '1px solid rgba(212, 175, 55, 0.25)' 
+                  }}>
+                    <img 
+                      src={searchResult.cdn_url} 
+                      alt="Sacred Certificate" 
+                      style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><rect width='100%' height='100%' fill='%230a0b0d'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23d4af37' font-family='sans-serif' font-size='10'>Certificate Image</text></svg>";
+                      }}
+                    />
+                  </div>
+                  <div style={{ fontSize: '0.95rem', color: '#c5a880', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    {searchResult.file_path && <div style={{ fontWeight: '700', color: 'var(--gold-primary)' }}>{searchResult.file_path}</div>}
+                    <div>
+                      Serial Number: <span style={{ color: '#fff', fontWeight: '600' }}>{searchResult.serial_number}</span>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div style={{ padding: '20px', background: 'rgba(10, 11, 13, 0.6)', borderRadius: '8px', border: '1px solid rgba(212, 175, 55, 0.15)' }}>
+                  <p style={{ color: '#fff', fontSize: '1.05rem', lineHeight: '1.6', margin: 0 }}>
+                    {searchResult.text}
+                  </p>
+                  <div style={{ fontSize: '0.95rem', color: '#c5a880', marginTop: '15px' }}>
+                    Serial Number: <span style={{ color: '#fff', fontWeight: '600' }}>{searchResult.serial_number}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
 export default App;
+
