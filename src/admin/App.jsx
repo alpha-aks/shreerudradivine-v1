@@ -209,7 +209,7 @@ export default function App() {
     try {
       const token = import.meta.env.VITE_GITHUB_TOKEN;
       const owner = import.meta.env.VITE_GITHUB_OWNER;
-      const repo = import.meta.env.VITE_GITHUB_REPO;
+      let repo = import.meta.env.VITE_GITHUB_REPO || 'cdn3';
       const branch = import.meta.env.VITE_GITHUB_BRANCH || 'main';
       const connStr = import.meta.env.VITE_NEONDB_CONNECTION_STRING;
 
@@ -218,6 +218,45 @@ export default function App() {
       }
       if (!connStr || connStr.includes('postgresql://user:pass@host/db')) {
         throw new Error('NeonDB connection string is missing or not configured in .env');
+      }
+
+      // Determine active repo in rotating list cdn3 to cdn7
+      const rotationRepos = ['cdn3', 'cdn4', 'cdn5', 'cdn6', 'cdn7'];
+      if (rotationRepos.includes(repo)) {
+        try {
+          const sql = neon(connStr);
+          const countsRes = await sql`
+            SELECT 
+              SUM(CASE WHEN cdn_url LIKE '%/cdn3@%' THEN 1 ELSE 0 END) as cdn3,
+              SUM(CASE WHEN cdn_url LIKE '%/cdn4@%' THEN 1 ELSE 0 END) as cdn4,
+              SUM(CASE WHEN cdn_url LIKE '%/cdn5@%' THEN 1 ELSE 0 END) as cdn5,
+              SUM(CASE WHEN cdn_url LIKE '%/cdn6@%' THEN 1 ELSE 0 END) as cdn6,
+              SUM(CASE WHEN cdn_url LIKE '%/cdn7@%' THEN 1 ELSE 0 END) as cdn7
+            FROM images
+          `;
+          const counts = countsRes[0] || {};
+          const repoCounts = {
+            cdn3: parseInt(counts.cdn3 || 0),
+            cdn4: parseInt(counts.cdn4 || 0),
+            cdn5: parseInt(counts.cdn5 || 0),
+            cdn6: parseInt(counts.cdn6 || 0),
+            cdn7: parseInt(counts.cdn7 || 0)
+          };
+
+          const startIndex = rotationRepos.indexOf(repo);
+          const activeRepos = rotationRepos.slice(startIndex);
+
+          for (const r of activeRepos) {
+            if (repoCounts[r] < 1000) {
+              repo = r;
+              break;
+            }
+            repo = r; // default to the last one if all are full
+          }
+          console.log(`Rotating repo selection resolved to: ${repo}`);
+        } catch (dbErr) {
+          console.warn("Could not query repo counts, using default repo:", dbErr);
+        }
       }
 
       // Convert file to Base64
@@ -331,7 +370,14 @@ export default function App() {
       // 2. Attempt to delete from GitHub (optional/graceful fallback)
       const token = import.meta.env.VITE_GITHUB_TOKEN;
       const owner = import.meta.env.VITE_GITHUB_OWNER;
-      const repo = import.meta.env.VITE_GITHUB_REPO;
+      let repo = import.meta.env.VITE_GITHUB_REPO;
+      if (img.cdn_url) {
+        // Extract repo name dynamically from the cdn_url (handles rotating repos)
+        const match = img.cdn_url.match(/\/gh\/[^/]+\/([^@/]+)/);
+        if (match && match[1]) {
+          repo = match[1];
+        }
+      }
       const branch = import.meta.env.VITE_GITHUB_BRANCH || 'main';
 
       if (token && owner && repo && !token.includes('your_github_personal_access_token')) {
